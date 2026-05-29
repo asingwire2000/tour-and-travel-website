@@ -1,0 +1,28 @@
+RewriteEngine On
+RewriteBase /
+
+# Force all error pages to use the main public error.php
+ErrorDocument 400 /aromasafaris.com/error.php?code=400
+ErrorDocument 401 /aromasafaris.com/error.php?code=401
+ErrorDocument 403 /aromasafaris.com/error.php?code=403
+ErrorDocument 500 /aromasafaris.com/error.php?code=500
+
+# List of valid public pages
+SetEnvIf Request_URI "^/aromasafaris\.com/(index\.php|about\.php|contact\.php|packages\.php|trips\.php|gallery\.php|booking\.php|error\.php|assets/|securepanel/(index|login|logout|accounts|appearance|bookings|change_password|gallery|messages|newsfeed|packages|pages|ping|profile|register|subscribers|trips|home_sliders|homepage)\.php)$" valid_page=true
+
+# Block access to error.php in securepanel
+RewriteCond %{REQUEST_URI} ^/(?:aromasafaris\.com/)?securepanel/error\.php
+RewriteRule ^.*$ /aromasafaris.com/error.php?code=403 [L,R=301]
+
+
+# Block direct access to includes and config
+RewriteCond %{REQUEST_URI} ^/(?:aromasafaris\.com/)?(includes|config)/
+RewriteRule ^.*$ /aromasafaris.com/error.php?code=403 [L,R=301]
+
+# Redirect all invalid pages (that aren't real files or directories) to error page
+RewriteCond %{ENV:valid_page} !=true
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /aromasafaris.com/error.php?code=404 [L,R=301]
+
+
